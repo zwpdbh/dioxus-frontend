@@ -3,3 +3,6 @@ edition = "2021"
 newline_style = "Unix"
 reorder_imports = true
 tab_spaces = 4
+
+# List attributes that should not be reformatted
+skip = ["rustfmt::skip"]

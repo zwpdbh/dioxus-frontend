@@ -3,26 +3,27 @@
 use dioxus::prelude::*;
 use tracing::Level;
 
+#[rustfmt::skip]
 #[derive(Clone, Routable, Debug, PartialEq)]
 enum Route {
     // All routes under the NavBar layout will be rendered inside of the NavBar Outlet
     #[layout(NavBar)]
-    #[route("/")]
-    Home {},
-    #[nest("/blog")]
-    #[layout(Blog)]
-    #[route("/")]
-    BlogList {},
-    #[route("/post/:name")]
-    BlogPost { name: String },
-    #[end_layout]
-    #[end_nest]
-    #[route("/counter")]
-    Counter {},
+        #[route("/")]
+        Home {},
+        #[nest("/blog")]
+            #[layout(Blog)]
+                #[route("/")]
+                BlogList {},
+                #[route("/post/:name")]
+                BlogPost { name: String },
+            #[end_layout]
+        #[end_nest]
+        #[route("/counter")]
+        Counter {},
     #[end_layout]
     #[nest("/myblog")]
-    #[redirect("/", || Route::BlogList {})]
-    #[redirect("/:name", |name: String| Route::BlogPost { name })]
+        #[redirect("/", || Route::BlogList {})]
+        #[redirect("/:name", |name: String| Route::BlogPost { name })]
     #[end_nest]
     // #[route("/acstor")]
     // Acstor {},
