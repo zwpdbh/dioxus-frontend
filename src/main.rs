@@ -10,6 +10,8 @@ enum Route {
     #[layout(NavBar)]
         #[route("/")]
         Home {},
+
+        // For blog section
         #[nest("/blog")]
             #[layout(Blog)]
                 #[route("/")]
@@ -18,18 +20,77 @@ enum Route {
                 BlogPost { name: String },
             #[end_layout]
         #[end_nest]
-        #[route("/counter")]
-        Counter {},
+
+        // For demo section 
+        #[nest("/demo")]
+            #[layout(Demo)]
+                #[route("/")]
+                DemoMenuDefault {},
+                #[route("/counter")]
+                Counter {},
+            #[end_layout]
+        #[end_nest]
     #[end_layout]
+
+    // This will redirect user to /blog or /blog/post/:name 
     #[nest("/myblog")]
         #[redirect("/", || Route::BlogList {})]
         #[redirect("/:name", |name: String| Route::BlogPost { name })]
     #[end_nest]
+
     // #[route("/acstor")]
     // Acstor {},
     // PageNotFound is a catch all route that will match any route and placing the matched segments in the route field
     #[route("/:..route")]
     PageNotFound { route: Vec<String> },
+}
+
+#[component]
+fn NavBar() -> Element {
+    rsx!(
+        nav {
+            "aria-label": "main navigation",
+            role: "navigation",
+            class: "navbar",
+
+            div { class: "navbar-menu", id: "navbarBasicExample",
+                div { class: "navbar-start",
+                    Link { class: "navbar-item", to: Route::Home {}, "Home" }
+                    Link { class: "navbar-item", to: Route::BlogList {},
+                        {},
+                        "Blog List"
+                    }
+                    Link { class: "navbar-item", to: Route::DemoMenuDefault {},
+                        {},
+                        "Demos"
+                    }
+                    div { class: "navbar-item has-dropdown is-hoverable",
+                        a { class: "navbar-link", "More" }
+                        div { class: "navbar-dropdown",
+                            a { class: "navbar-item", "About" }
+                            a { class: "navbar-item is-selected", "Jobs" }
+                            a { class: "navbar-item", "Contact" }
+                            hr { class: "navbar-divider" }
+                            a { class: "navbar-item", "Report an issue" }
+                        }
+                    }
+                }
+                div { class: "navbar-end",
+                    div { class: "navbar-item",
+                        div { class: "buttons",
+                            a { class: "button is-primary",
+                                strong { "Sign up" }
+                            }
+                            a { class: "button is-light", "Log in" }
+                        }
+                    }
+                }
+            }
+        }
+
+        // The Outlet component will render child routes (In this case just the Home component) inside the Outlet component
+        Outlet::<Route> {}
+    )
 }
 
 #[component]
@@ -60,10 +121,11 @@ fn App() -> Element {
     }
 }
 
+/// Place holder for Blog section
 #[component]
 fn Blog() -> Element {
     rsx! {
-        h1 { "Blog Section" }
+        h1 { "Blog Detail" }
         Outlet::<Route> {}
     }
 }
@@ -113,14 +175,29 @@ fn Counter() -> Element {
     }
 }
 
+/// Place holder for Demo section
 #[component]
-fn Menu() -> Element {
+fn Demo() -> Element {
+    rsx!(
+        div { class: "bd-docs-menu", DemoMenu {} }
+        Outlet::<Route> {}
+    )
+}
+
+#[component]
+fn DemoMenuDefault() -> Element {
+    rsx!(  )
+}
+
+#[component]
+fn DemoMenu() -> Element {
     rsx!(
         aside { class: "menu",
             p { class: "menu-label", "General" }
             ul { class: "menu-list",
                 li {
-                    a { "Dashboard" }
+                    // a { "Dashboard" }
+                    Link { to: Route::Counter {}, "Counter" }
                 }
                 li {
                     a { "Customers" }
@@ -168,50 +245,5 @@ fn Menu() -> Element {
                 }
             }
         }
-    )
-}
-
-#[component]
-fn NavBar() -> Element {
-    rsx!(
-        nav {
-            "aria-label": "main navigation",
-            role: "navigation",
-            class: "navbar",
-
-            div { class: "navbar-menu", id: "navbarBasicExample",
-                div { class: "navbar-start",
-                    Link { class: "navbar-item", to: Route::Home {}, "Home" }
-                    Link { class: "navbar-item", to: Route::BlogList {},
-                        {},
-                        "Blog List"
-                    }
-                    a { class: "navbar-item", "Demos" }
-                    div { class: "navbar-item has-dropdown is-hoverable",
-                        a { class: "navbar-link", "More" }
-                        div { class: "navbar-dropdown",
-                            a { class: "navbar-item", "About" }
-                            a { class: "navbar-item is-selected", "Jobs" }
-                            a { class: "navbar-item", "Contact" }
-                            hr { class: "navbar-divider" }
-                            a { class: "navbar-item", "Report an issue" }
-                        }
-                    }
-                }
-                div { class: "navbar-end",
-                    div { class: "navbar-item",
-                        div { class: "buttons",
-                            a { class: "button is-primary",
-                                strong { "Sign up" }
-                            }
-                            a { class: "button is-light", "Log in" }
-                        }
-                    }
-                }
-            }
-        }
-
-        // The Outlet component will render child routes (In this case just the Home component) inside the Outlet component
-        Outlet::<Route> {}
     )
 }
