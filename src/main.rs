@@ -179,8 +179,10 @@ fn Counter() -> Element {
 #[component]
 fn Demo() -> Element {
     rsx!(
-        div { class: "bd-docs-menu", DemoMenu {} }
-        Outlet::<Route> {}
+        div { class: "columns",
+            div { class: "column is-one-fifth", DemoMenu {} }
+            div { class: "column", Outlet::<Route> {} }
+        }
     )
 }
 
@@ -196,7 +198,6 @@ fn DemoMenu() -> Element {
             p { class: "menu-label", "General" }
             ul { class: "menu-list",
                 li {
-                    // a { "Dashboard" }
                     Link { to: Route::Counter {}, "Counter" }
                 }
                 li {
