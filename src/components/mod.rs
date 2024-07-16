@@ -149,7 +149,7 @@ fn DemoMenu() -> Element {
                     a { "Customers" }
                 }
             }
-            p { class: "menu-label", "Administration" }
+            p { class: "menu-label", "ACStor CRUD" }
             ul { class: "menu-list",
                 li {
                     a { "Team Settings" }
@@ -176,18 +176,6 @@ fn DemoMenu() -> Element {
                 }
                 li {
                     a { "Authentication" }
-                }
-            }
-            p { class: "menu-label", "Transactions" }
-            ul { class: "menu-list",
-                li {
-                    a { "Payments" }
-                }
-                li {
-                    a { "Transfers" }
-                }
-                li {
-                    a { "Balance" }
                 }
             }
         }
