@@ -16,7 +16,7 @@ dx serve --hot-reload
   git config --list
   ```
 
-- Config `.git/config`
+- Config by editing `.git/config`
 
   ```toml
   [user]
