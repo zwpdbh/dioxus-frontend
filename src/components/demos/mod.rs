@@ -3,6 +3,7 @@ use crate::routes::Route;
 use dioxus::prelude::*;
 
 pub mod counter;
+pub mod form;
 
 /// Place holder for Demo section
 #[component]
@@ -30,7 +31,7 @@ fn DemoMenu() -> Element {
                     Link { to: Route::Counter {}, "Counter" }
                 }
                 li {
-                    a { "Customers" }
+                    Link { to: Route::Form {}, "Form" }
                 }
             }
             p { class: "menu-label", "ACStor CRUD" }

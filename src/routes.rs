@@ -28,6 +28,8 @@ pub enum Route {
                 DemoMenuDefault {},
                 #[route("/counter")]
                 Counter {},
+                #[route("/form")]
+                Form {},
             #[end_layout]
         #[end_nest]
     #[end_layout]

@@ -1,6 +1,7 @@
 #![allow(non_snake_case)]
 pub use blog::*;
 pub use demos::counter::Counter;
+pub use demos::form::Form;
 pub use demos::*;
 use dioxus::prelude::*;
 pub use navbar::NavBar;
