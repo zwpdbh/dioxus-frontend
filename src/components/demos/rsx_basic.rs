@@ -1,4 +1,5 @@
 #![allow(non_snake_case)]
+use super::GeneralCard;
 use dioxus::prelude::*;
 
 #[component]
@@ -12,17 +13,6 @@ pub fn RsxBasic() -> Element {
             li { Interpolation {} }
             li { Expression {} }
             li { Loop {} }
-        }
-    )
-}
-
-#[component]
-fn GeneralCard(children: Element) -> Element {
-    rsx!(
-        div { class: "card",
-            div { class: "card-content",
-                div { class: "content", { children } }
-            }
         }
     )
 }

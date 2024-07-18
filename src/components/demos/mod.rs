@@ -4,6 +4,7 @@ use dioxus::prelude::*;
 
 pub mod counter;
 pub mod form;
+pub mod prop;
 pub mod rsx_basic;
 
 /// Place holder for Demo section
@@ -22,6 +23,7 @@ pub fn DemoMenuDefault() -> Element {
     rsx!(  )
 }
 
+/// This is the sidebar menu to show different demos for demo section
 #[component]
 fn DemoMenu() -> Element {
     rsx!(
@@ -33,6 +35,9 @@ fn DemoMenu() -> Element {
                 }
                 li {
                     Link { to: Route::Counter {}, "Counter" }
+                }
+                li {
+                    Link { to: Route::DemoProp {}, "Prop" }
                 }
                 li {
                     Link { to: Route::Form {}, "Form" }
@@ -66,6 +71,17 @@ fn DemoMenu() -> Element {
                 li {
                     a { "Authentication" }
                 }
+            }
+        }
+    )
+}
+
+#[component]
+fn GeneralCard(children: Element) -> Element {
+    rsx!(
+        div { class: "card",
+            div { class: "card-content",
+                div { class: "content", { children } }
             }
         }
     )

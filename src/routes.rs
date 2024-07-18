@@ -16,6 +16,7 @@ pub enum Route {
             #[layout(Blog)]
                 #[route("/")]
                 BlogList {},
+
                 #[route("/post/:name")]
                 BlogPost { name: String },
             #[end_layout]
@@ -26,10 +27,16 @@ pub enum Route {
             #[layout(Demo)]
                 #[route("/")]
                 DemoMenuDefault {},
+
                 #[route("/counter")]
                 Counter {},
+
                 #[route("/rsxbasic")]
                 RsxBasic {},
+
+                #[route("/prop")]
+                DemoProp {},
+
                 #[route("/form")]
                 Form {},
             #[end_layout]
