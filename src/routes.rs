@@ -28,6 +28,8 @@ pub enum Route {
                 DemoMenuDefault {},
                 #[route("/counter")]
                 Counter {},
+                #[route("/rsxbasic")]
+                RsxBasic {},
                 #[route("/form")]
                 Form {},
             #[end_layout]

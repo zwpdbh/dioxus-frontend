@@ -2,6 +2,7 @@
 pub use blog::*;
 pub use demos::counter::Counter;
 pub use demos::form::Form;
+pub use demos::rsx_basic::RsxBasic;
 pub use demos::*;
 use dioxus::prelude::*;
 pub use navbar::NavBar;

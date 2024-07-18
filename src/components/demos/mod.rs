@@ -4,6 +4,7 @@ use dioxus::prelude::*;
 
 pub mod counter;
 pub mod form;
+pub mod rsx_basic;
 
 /// Place holder for Demo section
 #[component]
@@ -27,6 +28,9 @@ fn DemoMenu() -> Element {
         aside { class: "menu",
             p { class: "menu-label", "General" }
             ul { class: "menu-list",
+                li {
+                    Link { to: Route::RsxBasic {}, "RsxBasic" }
+                }
                 li {
                     Link { to: Route::Counter {}, "Counter" }
                 }
