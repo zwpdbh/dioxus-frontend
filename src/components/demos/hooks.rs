@@ -4,8 +4,6 @@ use dioxus::prelude::*;
 
 #[component]
 pub fn DemoHooks() -> Element {
-    let mut count = use_signal(|| 0);
-
     rsx! {
         h1 { "Demo hooks" }
         p { "Hooks allow us to create state in our components. " }
@@ -18,10 +16,38 @@ pub fn DemoHooks() -> Element {
                 h2 { "use_signal hook" }
                 p { "It is one of the simplest hooks." }
 
-                p { "High-Five counter: {count}" }
-                button { class: "button", onclick: move |_| count += 1, "Up " }
-                button { class: "button", onclick: move |_| count -= 1, "Down " }
+                Counter {}
+            } }
+
+            li { MyCard {
+                h2 { "You can use multiple hooks in the same component if you want" }
+                MultipleHooksCounter {}
             } }
         }
+    }
+}
+
+#[component]
+fn Counter() -> Element {
+    let mut count = use_signal(|| 0);
+    rsx!(
+        p { "High-Five counter: {count}" }
+        button { class: "button", onclick: move |_| count += 1, "Up " }
+        button { class: "button", onclick: move |_| count -= 1, "Down " }
+    )
+}
+
+#[component]
+fn MultipleHooksCounter() -> Element {
+    let mut count_a = use_signal(|| 0);
+    let mut count_b = use_signal(|| 0);
+
+    rsx! {
+        p { "Counter_a: {count_a}" }
+        button { class: "button", onclick: move |_| count_a += 1, "a++" }
+        button { class: "button", onclick: move |_| count_a -= 1, "a--" }
+        p { "Counter_b: {count_b}" }
+        button { class: "button", onclick: move |_| count_b += 1, "b++" }
+        button { class: "button", onclick: move |_| count_b -= 1, "b--" }
     }
 }

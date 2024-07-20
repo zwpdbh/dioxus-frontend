@@ -23,4 +23,14 @@ dx serve --hot-reload
     name = your_name
     email = your_email
   ```
+
+## Run
+
+```sh
+dx serve --port 3002
+```
+
+## References
+
+- [dioxus-openai-qa-gui](https://github.com/fairjm/dioxus-openai-qa-gui)
   

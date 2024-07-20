@@ -40,8 +40,8 @@ pub enum Route {
                 #[route("/hoooks")]
                 DemoHooks {},
 
-                #[route("/form")]
-                Form {},
+                #[route("/userinput")]
+                UserInput {},
             #[end_layout]
         #[end_nest]
     #[end_layout]

@@ -3,10 +3,10 @@ use crate::routes::Route;
 use dioxus::prelude::*;
 
 pub mod event_handler;
-pub mod form;
 pub mod hooks;
 pub mod prop;
 pub mod rsx_basic;
+pub mod user_input;
 
 /// Place holder for Demo section
 #[component]
@@ -21,7 +21,7 @@ pub fn Demo() -> Element {
 
 #[component]
 pub fn DemoMenuDefault() -> Element {
-    rsx!(  )
+    rsx!()
 }
 
 /// This is the sidebar menu to show different demos for demo section
@@ -44,7 +44,7 @@ fn DemoMenu() -> Element {
                     Link { to: Route::DemoHooks {}, "Hooks" }
                 }
                 li {
-                    Link { to: Route::Form {}, "Form" }
+                    Link { to: Route::UserInput {}, "User Input" }
                 }
             }
             p { class: "menu-label", "ACStor CRUD" }
