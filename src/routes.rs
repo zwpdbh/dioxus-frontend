@@ -28,9 +28,6 @@ pub enum Route {
                 #[route("/")]
                 DemoMenuDefault {},
 
-                #[route("/counter")]
-                Counter {},
-
                 #[route("/rsxbasic")]
                 RsxBasic {},
 
@@ -39,6 +36,9 @@ pub enum Route {
 
                 #[route("/event_handler")]
                 DemoEventHandler {},
+
+                #[route("/hoooks")]
+                DemoHooks {},
 
                 #[route("/form")]
                 Form {},

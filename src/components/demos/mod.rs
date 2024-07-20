@@ -2,9 +2,9 @@
 use crate::routes::Route;
 use dioxus::prelude::*;
 
-pub mod counter;
 pub mod event_handler;
 pub mod form;
+pub mod hooks;
 pub mod prop;
 pub mod rsx_basic;
 
@@ -21,7 +21,7 @@ pub fn Demo() -> Element {
 
 #[component]
 pub fn DemoMenuDefault() -> Element {
-    rsx!()
+    rsx!(  )
 }
 
 /// This is the sidebar menu to show different demos for demo section
@@ -35,13 +35,13 @@ fn DemoMenu() -> Element {
                     Link { to: Route::RsxBasic {}, "RsxBasic" }
                 }
                 li {
-                    Link { to: Route::Counter {}, "Counter" }
-                }
-                li {
                     Link { to: Route::DemoProp {}, "Prop" }
                 }
                 li {
                     Link { to: Route::DemoEventHandler {}, "Event Handler" }
+                }
+                li {
+                    Link { to: Route::DemoHooks {}, "Hooks" }
                 }
                 li {
                     Link { to: Route::Form {}, "Form" }
