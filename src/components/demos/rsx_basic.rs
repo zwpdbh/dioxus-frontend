@@ -1,5 +1,5 @@
 #![allow(non_snake_case)]
-use super::GeneralCard;
+use super::MyCard;
 use dioxus::prelude::*;
 
 #[component]
@@ -21,7 +21,7 @@ pub fn RsxBasic() -> Element {
 fn DemoAttributes() -> Element {
     let large_font = true;
     rsx! {
-        GeneralCard { 
+        MyCard { 
             div {
                 h1 { "Conditional Attributes" }
                 div { class: if large_font { "text-xl" }, "Hello, World!" }
@@ -47,7 +47,7 @@ fn DemoPassHtmlDirectly() -> Element {
     let contents = "live <b>dangerously</b>";
 
     rsx! {
-        GeneralCard { 
+        MyCard { 
             h1 { "DemoPassHtmlDirectly" }
             div { dangerous_inner_html: "{contents}" }
         }
@@ -58,7 +58,7 @@ fn DemoPassHtmlDirectly() -> Element {
 pub fn ConditionalRender() -> Element {
     let is_logged_in: Option<i32> = None;
     rsx! {
-        GeneralCard { 
+        MyCard { 
             h1 { "ConditionalRender" }
             // We only render the welcome message if we are logged in
             // You can use if statements in the middle of a render block to conditionally render elements
@@ -86,7 +86,7 @@ fn DynamicText() -> Element {
 
     rsx! {
 
-        GeneralCard { 
+        MyCard { 
             h1 { "DynamicText" }
             "{title} by {by} ({score}) {time} {comments}"
         }
@@ -98,7 +98,7 @@ fn Interpolation() -> Element {
     let coordinates = (42, 0);
     let country = "es";
     rsx! {
-        GeneralCard { 
+        MyCard { 
             h1 { "Interpolation" }
             div {
                 class: "country-{country}",
@@ -120,7 +120,7 @@ fn Expression() -> Element {
     let text = "Dioxus";
 
     rsx! {
-        GeneralCard { 
+        MyCard { 
             h1 { "Expression" }
             span {
                 {text.to_uppercase()},
@@ -133,7 +133,7 @@ fn Expression() -> Element {
 #[component]
 fn Loop() -> Element {
     rsx! {
-        GeneralCard { 
+        MyCard { 
             h1 { "Loop" }
             // use a for loop where the body itself is RSX
             div {

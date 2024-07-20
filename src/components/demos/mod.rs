@@ -20,7 +20,7 @@ pub fn Demo() -> Element {
 
 #[component]
 pub fn DemoMenuDefault() -> Element {
-    rsx!(  )
+    rsx!()
 }
 
 /// This is the sidebar menu to show different demos for demo section
@@ -77,7 +77,7 @@ fn DemoMenu() -> Element {
 }
 
 #[component]
-fn GeneralCard(children: Element) -> Element {
+fn MyCard(children: Element) -> Element {
     rsx!(
         div { class: "card",
             div { class: "card-content",

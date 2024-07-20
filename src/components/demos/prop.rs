@@ -1,5 +1,5 @@
 #![allow(non_snake_case)]
-use super::GeneralCard;
+use super::MyCard;
 use dioxus::prelude::*;
 
 #[component]
@@ -9,49 +9,49 @@ pub fn DemoProp() -> Element {
             li {
                 SimpleProp { score: 42 }
             }
-            li { GeneralCard { 
+            li { MyCard {
                 h1 { "Prop Option" }
                 ul {
-                    li { GeneralCard { 
+                    li { MyCard {
                         PropOtions { title: "Some Title" }
                     } }
 
-                    li { GeneralCard { 
+                    li { MyCard {
                         PropOtions { title: "Some Title", subtitle: "Some Subtitle" }
                     } }
                 }
             } }
-            li { GeneralCard { 
+            li { MyCard {
                 h1 { "Explicitly Required Option" }
                 ul {
-                    li { GeneralCard { 
+                    li { MyCard {
                         ExplicitOption { title: "Some Title", subtitle: None }
                     } }
 
-                    li { GeneralCard { 
+                    li { MyCard {
                         ExplicitOption { title: "Some Title", subtitle: Some("Some SubTitle".to_string()) }
                     } }
                 }
             } }
 
-            li { GeneralCard { 
+            li { MyCard {
                 h1 { "Default Props" }
 
                 ul {
-                    li { GeneralCard { 
+                    li { MyCard {
                         DefaultComponent { number: 5 }
                     } }
 
-                    li { GeneralCard { DefaultComponent {} } }
+                    li { MyCard { DefaultComponent {} } }
                 }
             } }
 
-            li { GeneralCard { 
+            li { MyCard {
                 h1 { "Automatic Conversion with into" }
                 IntoComponent { string: "some &str can be accepted instead of just String" }
             } }
 
-            li { GeneralCard { 
+            li { MyCard {
                 h1 { "ComponentChildrenV1" }
                 ComponentChildrenV1 {
                     href: "https://www.youtube.com/watch?v=C-M2hs3sXGo",
@@ -63,7 +63,7 @@ pub fn DemoProp() -> Element {
                 }
             } }
 
-            li { GeneralCard { 
+            li { MyCard {
                 h1 { "ComponentChildrenV2 pass element like children instead of pass rsx!" }
                 p { "This is must be done from the `magic` children prop" }
                 ComponentChildrenV2 { href: "https://www.youtube.com/watch?v=C-M2hs3sXGo",
@@ -84,7 +84,7 @@ struct LikesProps {
 #[component]
 fn SimpleProp(props: LikesProps) -> Element {
     rsx!(
-        GeneralCard { 
+        MyCard {
             h1 { "Simple prop" }
             div {
                 "This post has "
