@@ -2,6 +2,7 @@
 use crate::routes::Route;
 use dioxus::prelude::*;
 
+pub mod context;
 pub mod event_handler;
 pub mod hooks;
 pub mod prop;
@@ -45,6 +46,9 @@ fn DemoMenu() -> Element {
                 }
                 li {
                     Link { to: Route::UserInput {}, "User Input" }
+                }
+                li {
+                    Link { to: Route::DemoContext {}, "Context" }
                 }
             }
             p { class: "menu-label", "ACStor CRUD" }

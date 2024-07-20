@@ -3,6 +3,7 @@ use super::MyCard;
 use dioxus::prelude::*;
 use dioxus_free_icons::icons::fa_brands_icons::FaGithub;
 use dioxus_free_icons::Icon;
+use dioxus_logger::tracing::info;
 
 /// Example from: https://github.com/fairjm/dioxus-openai-qa-gui
 #[component]
@@ -13,6 +14,10 @@ pub fn UserInput() -> Element {
         div { class: "container",
             ul {
                 li { ControlledInput {} }
+
+                li { UncontrolledInput {} }
+
+                li { HandleFile {} }
             }
         }
     )
@@ -36,6 +41,61 @@ fn ControlledInput() -> Element {
             }
 
             p { "Your input is: {name}" }
+        }
+    )
+}
+
+#[component]
+fn UncontrolledInput() -> Element {
+    rsx! {
+        MyCard {
+            h2 { "Uncontrolled Inputs" }
+            form {
+                onsubmit: move |event| {
+                    info!("Submitted! {event:?}");
+                },
+                input { name: "name" }
+                input { name: "age" }
+                input { name: "date" }
+                input { r#type: "submit" }
+            }
+        }
+    }
+}
+
+#[component]
+fn HandleFile() -> Element {
+    let mut files_uploaded: Signal<Vec<String>> = use_signal(Vec::new);
+    rsx!(
+        MyCard {
+            h2 { "Handling files" }
+            p {
+                "Notice: type is a Rust keyword, so when specifying the type of the input field, you have to write it as r#type:"file
+                "."
+            }
+            input {
+                // tell the input to pick a file
+                r#type: "file",
+                // list the accepted extensions
+                accept: ".txt,.rs",
+                // To select a folder, we need to set it to true
+                directory: false,
+                // pick multiple files
+                multiple: true,
+                onchange: move |evt| {
+                    async move {
+                        if let Some(file_engine) = evt.files() {
+                            let files = file_engine.files();
+                            for file_name in &files {
+                                if let Some(file) = file_engine.read_file_to_string(file_name).await
+                                {
+                                    files_uploaded.write().push(file);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     )
 }

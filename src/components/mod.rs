@@ -5,6 +5,7 @@ pub use demos::hooks::DemoHooks;
 pub use demos::prop::DemoProp;
 pub use demos::rsx_basic::RsxBasic;
 pub use demos::user_input::UserInput;
+pub use demos::context::DemoContext;
 pub use demos::*;
 use dioxus::prelude::*;
 pub use navbar::NavBar;

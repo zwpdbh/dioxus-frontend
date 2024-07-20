@@ -42,6 +42,9 @@ pub enum Route {
 
                 #[route("/userinput")]
                 UserInput {},
+
+                #[route("/context")]
+                DemoContext {},
             #[end_layout]
         #[end_nest]
     #[end_layout]
