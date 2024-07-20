@@ -10,7 +10,7 @@ dx serve --hot-reload
 
 ## How to config project's git configure
 
-- Show current git config used by project 
+- Show current git config used by project
 
   ```sh
   git config --list
@@ -20,6 +20,7 @@ dx serve --hot-reload
 
   ```toml
   [user]
-    name = <your_name>
-    email = <your_email>
+    name = your_name
+    email = your_email
   ```
+  
