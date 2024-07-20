@@ -45,6 +45,9 @@ pub enum Route {
 
                 #[route("/context")]
                 DemoContext {},
+
+                #[route("/dynamicrendering")]
+                DemoDynamicRendering {},
             #[end_layout]
         #[end_nest]
     #[end_layout]

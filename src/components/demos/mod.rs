@@ -3,6 +3,7 @@ use crate::routes::Route;
 use dioxus::prelude::*;
 
 pub mod context;
+pub mod dynamic_rendering;
 pub mod event_handler;
 pub mod hooks;
 pub mod prop;
@@ -49,6 +50,9 @@ fn DemoMenu() -> Element {
                 }
                 li {
                     Link { to: Route::DemoContext {}, "Context" }
+                }
+                li {
+                    Link { to: Route::DemoDynamicRendering {}, "Dynamic Rendering" }
                 }
             }
             p { class: "menu-label", "ACStor CRUD" }
