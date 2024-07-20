@@ -1,6 +1,7 @@
 #![allow(non_snake_case)]
 pub use blog::*;
 pub use demos::counter::Counter;
+pub use demos::event_handler::DemoEventHandler;
 pub use demos::form::Form;
 pub use demos::prop::DemoProp;
 pub use demos::rsx_basic::RsxBasic;

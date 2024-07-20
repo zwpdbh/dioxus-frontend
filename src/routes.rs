@@ -37,6 +37,9 @@ pub enum Route {
                 #[route("/prop")]
                 DemoProp {},
 
+                #[route("/event_handler")]
+                DemoEventHandler {},
+
                 #[route("/form")]
                 Form {},
             #[end_layout]

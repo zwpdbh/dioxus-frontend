@@ -3,6 +3,7 @@ use crate::routes::Route;
 use dioxus::prelude::*;
 
 pub mod counter;
+pub mod event_handler;
 pub mod form;
 pub mod prop;
 pub mod rsx_basic;
@@ -38,6 +39,9 @@ fn DemoMenu() -> Element {
                 }
                 li {
                     Link { to: Route::DemoProp {}, "Prop" }
+                }
+                li {
+                    Link { to: Route::DemoEventHandler {}, "Event Handler" }
                 }
                 li {
                     Link { to: Route::Form {}, "Form" }

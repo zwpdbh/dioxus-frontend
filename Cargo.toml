@@ -9,6 +9,10 @@ edition = "2021"
 [dependencies]
 chrono = "0.4.38"
 dioxus = { version = "0.5", features = ["web", "router"] }
+dioxus-free-icons = { version = "0.8.0", features = [
+  "font-awesome-brands",
+  "bootstrap",
+] }
 
 # Debug
 tracing = "0.1.40"
