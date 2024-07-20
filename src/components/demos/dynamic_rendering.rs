@@ -23,6 +23,8 @@ pub fn DemoDynamicRendering() -> Element {
                         }
                     }
                 }
+                li { RenderNothing {} }
+                li { RenderingList {} }
             }
         }
     )
@@ -65,6 +67,98 @@ fn ConditionalRendering(prop: ConditionalRenderingProps) -> Element {
                 } else {
                     // if we are not logged in, the button should say "Log In"
                     "Log In"
+                }
+            }
+        }
+    )
+}
+
+#[component]
+fn RenderNothing() -> Element {
+    let mut is_logged_in = use_context::<Signal<IsLoggedIn>>();
+
+    if is_logged_in().0 {
+        return None;
+    }
+
+    rsx! {
+        MyCard {
+            h2 { "Rendering nothing" }
+            label { class: "checkbox",
+                "is_logged_in"
+                input {
+                    r#"type"#: "checkbox",
+                    oninput: move |event| {
+                        let logged_in = event.value() == "true";
+                        is_logged_in.write().0 = logged_in;
+                    }
+                }
+            }
+        }
+    }
+}
+
+#[derive(PartialEq, Clone)]
+struct Comment {
+    content: String,
+    id: i32,
+}
+
+#[derive(PartialEq, Clone, Props)]
+struct CommentComponentProp {
+    comment: Comment,
+}
+
+#[component]
+fn RenderingList() -> Element {
+    let mut comment_field = use_signal(String::new);
+    let mut next_id = use_signal(|| 0);
+    let mut comments = use_signal(Vec::<Comment>::new);
+
+    let comments_lock = comments.read();
+    let comments_rendered = comments_lock.iter().map(|comment| {
+        rsx! {
+            CommentComponent { comment: comment.clone() }
+        }
+    });
+
+    rsx! {
+        MyCard {
+            h2 { "Rendering list" }
+            form {
+                onsubmit: move |_| {
+                    comments
+                        .write()
+                        .push(Comment {
+                            content: comment_field(),
+                            id: next_id(),
+                        });
+                    next_id += 1;
+                    comment_field.set(String::new());
+                },
+                input {
+                    value: "{comment_field}",
+                    oninput: move |event| comment_field.set(event.value())
+                }
+                input { r#type: "submit" }
+            }
+            {comments_rendered}
+        }
+    }
+}
+
+/// Because we annotate it as "#[component]".
+/// We could pass prop.comment as regular parameters directly!
+#[component]
+fn CommentComponent(comment: Comment) -> Element {
+    rsx!(
+        MyCard {
+            ul {
+                li {
+                    p { "comment: {comment.content}" }
+                }
+                li {
+                    p { "id: {comment.id" }
                 }
             }
         }
