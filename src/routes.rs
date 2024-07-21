@@ -48,6 +48,9 @@ pub enum Route {
 
                 #[route("/dynamicrendering")]
                 DemoDynamicRendering {},
+
+                #[route("/async_with_resource")]
+                DemoAsyncResource {},
             #[end_layout]
         #[end_nest]
     #[end_layout]

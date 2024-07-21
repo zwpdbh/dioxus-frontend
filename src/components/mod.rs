@@ -1,5 +1,6 @@
 #![allow(non_snake_case)]
 pub use blog::*;
+pub use demos::async_with_resource::DemoAsyncResource;
 pub use demos::context::DemoContext;
 pub use demos::dynamic_rendering::DemoDynamicRendering;
 pub use demos::event_handler::DemoEventHandler;

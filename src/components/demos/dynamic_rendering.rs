@@ -24,7 +24,8 @@ pub fn DemoDynamicRendering() -> Element {
                     }
                 }
                 li { RenderNothing {} }
-                li { RenderingList {} }
+                li { RenderingListV1 {} }
+                li { RenderingListV2 {} }
             }
         }
     )
@@ -110,7 +111,7 @@ struct CommentComponentProp {
 }
 
 #[component]
-fn RenderingList() -> Element {
+fn RenderingListV1() -> Element {
     let mut comment_field = use_signal(String::new);
     let mut next_id = use_signal(|| 0);
     let mut comments = use_signal(Vec::<Comment>::new);
@@ -124,7 +125,8 @@ fn RenderingList() -> Element {
 
     rsx! {
         MyCard {
-            h2 { "Rendering list" }
+            h2 { "Rendering list V1" }
+            p { "Dioxus accepts iterators that produce Elements" }
             form {
                 onsubmit: move |_| {
                     comments
@@ -143,6 +145,43 @@ fn RenderingList() -> Element {
                 input { r#type: "submit" }
             }
             {comments_rendered}
+        }
+    }
+}
+
+#[component]
+fn RenderingListV2() -> Element {
+    let mut comment_field = use_signal(String::new);
+    let mut next_id = use_signal(|| 0);
+    let mut comments = use_signal(Vec::<Comment>::new);
+
+    rsx! {
+        MyCard {
+            h2 { "Rendering list V2" }
+            p {
+                "Different from V1: Instead of using .iter, .map, and rsx, directly use 'for' loop with a body of rsx code."
+            }
+            form {
+                onsubmit: move |_| {
+                    comments
+                        .write()
+                        .push(Comment {
+                            content: comment_field(),
+                            id: next_id(),
+                        });
+                    next_id += 1;
+                    comment_field.set(String::new());
+                },
+                input {
+                    value: "{comment_field}",
+                    oninput: move |event| comment_field.set(event.value())
+                }
+                input { r#type: "submit" }
+            }
+            for comment in comments() {
+                // Notice the body of this for loop is rsx code, not an expression
+                CommentComponent { comment }
+            }
         }
     }
 }
