@@ -2,6 +2,7 @@
 use crate::routes::Route;
 use dioxus::prelude::*;
 
+pub mod async_with_coroutines;
 pub mod async_with_resource;
 pub mod context;
 pub mod dynamic_rendering;
@@ -56,7 +57,10 @@ fn DemoMenu() -> Element {
                     Link { to: Route::DemoDynamicRendering {}, "Dynamic Rendering" }
                 }
                 li {
-                    Link { to: Route::DemoAsyncResource {}, "Async with Resource" }
+                    Link { to: Route::DemoResource {}, "Async with Resource" }
+                }
+                li {
+                    Link { to: Route::DemoCoroutines {}, "Async with Coroutines" }
                 }
             }
             p { class: "menu-label", "ACStor CRUD" }

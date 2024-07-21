@@ -2,10 +2,11 @@
 use super::MyCard;
 use dioxus::prelude::*;
 use reqwest;
+use reqwest::Error;
 use serde::Deserialize;
 
 #[component]
-pub fn DemoAsyncResource() -> Element {
+pub fn DemoResource() -> Element {
     rsx!(
         h1 { "Resource" }
         p { "use_resource lets you run an async closure, and provides you with its result." }
@@ -15,15 +16,17 @@ pub fn DemoAsyncResource() -> Element {
     )
 }
 
+pub async fn get_pic() -> Result<ApiResponse, Error> {
+    reqwest::get("https://dog.ceo/api/breeds/image/random")
+        .await
+        .unwrap()
+        .json::<ApiResponse>()
+        .await
+}
+
 #[component]
 pub fn DemoApiRequest() -> Element {
-    let mut future = use_resource(|| async move {
-        reqwest::get("https://dog.ceo/api/breeds/image/random")
-            .await
-            .unwrap()
-            .json::<ApiResponse>()
-            .await
-    });
+    let mut future: Resource<Result<ApiResponse, Error>> = use_resource(|| get_pic());
 
     match &*future.read_unchecked() {
         Some(Ok(response)) => rsx! {
@@ -49,7 +52,7 @@ pub fn DemoApiRequest() -> Element {
 }
 
 #[derive(Deserialize)]
-struct ApiResponse {
+pub struct ApiResponse {
     #[serde(rename = "message")]
     image_url: String,
 }

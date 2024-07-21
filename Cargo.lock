@@ -491,9 +491,11 @@ dependencies = [
  "dioxus",
  "dioxus-free-icons",
  "dioxus-logger",
+ "futures-util",
  "reqwest",
  "serde",
  "serde_json",
+ "tokio",
  "tracing",
 ]
 

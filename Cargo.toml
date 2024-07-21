@@ -16,6 +16,8 @@ dioxus-free-icons = { version = "0.8.0", features = [
   "bootstrap",
 ] }
 reqwest = { version = "0.12", features = ["json"] }
+futures-util = { version = "^0.3" }
+tokio = { version = "1.38.1", features = ["time"] }
 
 # Debug
 tracing = "0.1.40"
