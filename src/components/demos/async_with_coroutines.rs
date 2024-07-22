@@ -1,8 +1,9 @@
 #![allow(non_snake_case)]
 use super::MyCard;
 use dioxus::prelude::*;
-use futures_util::StreamExt;
-use tokio::time::Duration;
+use futures_util::stream::StreamExt;
+use gloo_timers::future::sleep;
+use std::time::Duration;
 
 #[component]
 pub fn DemoCoroutines() -> Element {
@@ -17,71 +18,48 @@ pub fn DemoCoroutines() -> Element {
     )
 }
 
-struct Profile {
-    name: String,
-    age: i32,
+enum CounterMsg {
+    KeepInc(usize),
+    Reset,
 }
 
-enum ProfileUpdate {
-    SetUsername(String),
-    SetAge(i32),
-}
-
-async fn connect_to_server() -> Server {
-    tokio::time::sleep(Duration::from_secs(1)).await;
-    Server {}
-}
-
-struct Server {}
-
-impl Server {
-    pub async fn update_username(&self, _name: String) {
-        tokio::time::sleep(Duration::from_secs(1)).await;
-    }
-
-    pub async fn update_age(&self, _age: i32) {
-        tokio::time::sleep(Duration::from_secs(1)).await;
-    }
-
-    pub async fn get_profile(&self) -> Option<Profile> {
-        tokio::time::sleep(Duration::from_secs(1)).await;
-        Some(Profile {
-            name: "test".to_string(),
-            age: 1,
-        })
-    }
-}
-
+/// Observation:
+/// Click 3 time on Inc button then click Reset button.
+/// The counter changed to 1, 2, 3 and to 0 with interval 3 seconds.
 #[component]
 fn SimpleCoroutine() -> Element {
-    let profile = use_coroutine(|mut rx: UnboundedReceiver<ProfileUpdate>| async move {
-        let server = connect_to_server().await;
+    let mut counter = use_signal(|| 0);
 
+    let update_counter = use_coroutine(|mut rx: UnboundedReceiver<CounterMsg>| async move {
         while let Some(msg) = rx.next().await {
+            // simulate get result from api
+            sleep(Duration::from_secs(3)).await;
             match msg {
-                ProfileUpdate::SetUsername(name) => server.update_username(name).await,
-                ProfileUpdate::SetAge(age) => server.update_age(age).await,
+                CounterMsg::KeepInc(n) => {
+                    counter += n;
+                }
+                CounterMsg::Reset => {
+                    counter.set(0);
+                }
             }
         }
     });
-
-    let _: Coroutine<()> = use_coroutine(|rx| async move { todo!("xx") });
-
-    rsx!(
+    rsx! {
         MyCard {
-            h2 { "use_coroutine to send value" }
+            div {
+                button {
+                    class: "button",
+                    onclick: move |_| { update_counter.send(CounterMsg::KeepInc(1)) },
+                    "Inc"
+                }
+                button {
+                    class: "button",
+                    onclick: move |_| { update_counter.send(CounterMsg::Reset) },
+                    "Reset"
+                }
 
-            button {
-                class: "button",
-                onclick: move |_| profile.send(ProfileUpdate::SetUsername("Bob".to_string())),
-                "Update username"
-            }
-
-            button {
-                class: "button",
-                onclick: move |_| profile.send(ProfileUpdate::SetAge(12)),
-                "Update age"
+                p { "counter: {counter}" }
             }
         }
-    )
+    }
 }
