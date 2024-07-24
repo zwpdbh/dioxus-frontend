@@ -4,6 +4,7 @@ use dioxus::prelude::*;
 
 pub mod async_with_coroutines;
 pub mod async_with_resource;
+pub mod async_with_spawn;
 pub mod context;
 pub mod dynamic_rendering;
 pub mod event_handler;
@@ -61,6 +62,9 @@ fn DemoMenu() -> Element {
                 }
                 li {
                     Link { to: Route::DemoCoroutines {}, "Async with Coroutines" }
+                }
+                li {
+                    Link { to: Route::DemoSpawn {}, "Async with Spawn" }
                 }
             }
             p { class: "menu-label", "ACStor CRUD" }

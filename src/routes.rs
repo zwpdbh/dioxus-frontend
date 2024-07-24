@@ -54,6 +54,9 @@ pub enum Route {
 
                 #[route("/demo_coroutines")]
                 DemoCoroutines {},
+
+                #[route("/demo_spawn")]
+                DemoSpawn {},
             #[end_layout]
         #[end_nest]
     #[end_layout]
