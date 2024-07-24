@@ -57,6 +57,9 @@ pub enum Route {
 
                 #[route("/demo_spawn")]
                 DemoSpawn {},
+
+                #[route("/llm")]
+                DemoLLM {},
             #[end_layout]
         #[end_nest]
     #[end_layout]

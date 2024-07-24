@@ -1,6 +1,7 @@
 #![allow(non_snake_case)]
 use crate::routes::Route;
 use dioxus::prelude::*;
+use llm::DemoLLM;
 
 pub mod async_with_coroutines;
 pub mod async_with_resource;
@@ -9,6 +10,7 @@ pub mod context;
 pub mod dynamic_rendering;
 pub mod event_handler;
 pub mod hooks;
+pub mod llm;
 pub mod prop;
 pub mod rsx_basic;
 pub mod user_input;
@@ -65,6 +67,12 @@ fn DemoMenu() -> Element {
                 }
                 li {
                     Link { to: Route::DemoSpawn {}, "Async with Spawn" }
+                }
+            }
+            p { class: "menu-label", "LLM service" }
+            ul { class: "menu-list",
+                li {
+                    Link { to: Route::DemoLLM {}, "LLM service" }
                 }
             }
             p { class: "menu-label", "ACStor CRUD" }
