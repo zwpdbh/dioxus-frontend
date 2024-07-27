@@ -1,7 +1,6 @@
 #![allow(non_snake_case)]
 use crate::routes::Route;
 use dioxus::prelude::*;
-use llm::DemoLLM;
 
 pub mod async_with_coroutines;
 pub mod async_with_resource;
