@@ -3,7 +3,7 @@ use super::MyCard;
 use crate::Route;
 use dioxus::prelude::*;
 use dioxus_logger::tracing::info;
-use futures_util::io::Sink;
+// use futures_util::io::Sink;
 use serde::de::DeserializeOwned;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
@@ -55,21 +55,50 @@ impl Configuration {
 
 #[derive(Serialize, Deserialize, Debug, PartialEq, Props, Clone)]
 struct SystemPrompt {
-    name: String,
-    content: String,
+    pub name: String,
+    pub content: String,
+}
+
+#[derive(Serialize, Deserialize, Debug, PartialEq, Props, Clone)]
+struct SystemPrompts {
+    pub prompt_list: Vec<SystemPrompt>,
+}
+
+impl SystemPrompts {
+    fn new() -> Self {
+        SystemPrompts {
+            prompt_list: vec![],
+        }
+    }
+    fn is_empty(self) -> bool {
+        self.prompt_list.is_empty()
+    }
 }
 
 #[derive(Serialize, Deserialize, Debug, PartialEq, Props, Clone)]
 struct MessageBody {
-    role: String,
-    content: String,
+    pub role: String,
+    pub content: String,
 }
 
 #[derive(Serialize, Deserialize, Debug, PartialEq, Props, Clone)]
 struct ChatResponse {
-    content: String,
-    prompt_tokens: u64,
-    completion_tokens: u64,
+    pub content: String,
+    pub prompt_tokens: u64,
+    pub completion_tokens: u64,
+}
+
+#[derive(Serialize, Deserialize, Debug, PartialEq, Props, Clone)]
+struct SystemPromptDropdown {
+    pub dropdown_list: Vec<String>,
+}
+
+impl SystemPromptDropdown {
+    fn new() -> Self {
+        SystemPromptDropdown {
+            dropdown_list: vec![],
+        }
+    }
 }
 
 #[component]
@@ -78,7 +107,6 @@ fn Content() -> Element {
     let system_prompt: Signal<Vec<SystemPrompt>> = use_context_provider(|| Signal::new(vec![]));
     let setting_hide = use_context_provider(|| Signal::new("is-hidden"));
 
-    let system_prompt = use_context_provider(|| Signal::new(""));
     let system_prompt_name = use_context_provider(|| Signal::new(""));
     let prompt = use_context_provider(|| Signal::new(""));
     let loading = use_context_provider(|| Signal::new(""));
@@ -90,15 +118,17 @@ fn Content() -> Element {
             completion_tokens: 0,
         })
     });
-    let system_prompt_dropdown = use_context_provider(|| Signal::new(""));
+    let system_prompt_dropdown = use_context_provider(|| Signal::new(SystemPromptDropdown::new()));
 
     rsx! {
-
-        head { meta { name: "viewport", content: "width=device-width, initial-scale=1" } }
+        // head {
+        //     meta { name: "viewport", content: "width=device-width, initial-scale=1" } }
         div { class: "container is-max-desktop px-2",
             nav { class: "level mt-2 mb-2",
                 div { class: "level-left",
-                    div { class: "level-item", p { class: "title is-size-4 has-text-centered", "OpenAI测试" } }
+                    div { class: "level-item",
+                        p { class: "title is-size-4 has-text-centered", "OpenAI测试" }
+                    }
                     div { class: "level-item",
                         a {
                             class: "button is-small",
@@ -167,7 +197,9 @@ fn Content() -> Element {
                 div { class: "column pb-1",
                     nav { class: "level mb-1",
                         div { class: "level-left",
-                            div { class: "level-item", p { class: "has-text-grey-light", "系统prompt" } }
+                            div { class: "level-item",
+                                p { class: "has-text-grey-light", "系统prompt" }
+                            }
                             div { class: "level-item",
                                 div { class: "dropdown {system_prompt_dropdown}",
                                     div { class: "dropdown-trigger",
@@ -185,69 +217,9 @@ fn Content() -> Element {
                                             span { "prompt列表" }
                                             span { class: "icon is-small",
                                                 if system_prompt_dropdown.is_empty() {
-                                    rsx!(
-                                        Icon { width: 24, height: 24, fill: "#6e7781", icon: BsArrowDownShort }
-                                    )
-                                } else {
-                                    rsx!(
-                                        Icon { width: 24, height: 24, fill: "#6e7781", icon: BsArrowUpShort }
-                                    )
-                                }
-                                            }
-                                        }
-                                    }
-
-                                    div {
-
-                                        class: "dropdown-menu",
-
-                                        id: "dropdown-menu",
-
-                                        role: "menu",
-                                        div { class: "dropdown-content",
-                                            a {
-                                                class: "dropdown-item py-0",
-                                                onclick: move |_| {
-                                                    system_prompt_dropdown.set("");
-                                                },
-                                                "关闭"
-                                            }
-                                            hr { class: "dropdown-divider" }
-                                            if system_prompts.is_empty() {
-                                rsx! {
-                                    div { class: "dropdown-item",
-                                        p {
-                                            "没有system prompts"
-                                        }
-                                    }
-                                }
-                            }
-                                            div { class: "dropdown-item",
-                                                div { class: "columns is-multiline",
-                                                    system_prompts.iter().map(|e| {
-                                    rsx!(
-                                        div {class: "column",
-                                            span { class: "tag is-primary is-light",
-                                                onclick: move |_| {
-                                                    system_prompt_name.set(e.name.clone());
-                                                    system_prompt.set(e.content.clone());
-                                                    system_prompt_dropdown.set("");
-                                                },
-                                                "{e.name}"
-
-                                                button { class: "delete is-small",
-                                                    onclick: move |_| {
-                                                        system_prompts.with_mut(|v| {
-                                                            if let Some(p) = v.iter().position(|value| value.name.eq(&e.name)) {
-                                                                v.remove(p);
-                                                            }
-                                                        });
-                                                        save_system_prompts(&*system_prompts.current().clone());
-                                                    }
-                                                }
-                                            }
-                                        })
-                                    })
+                                                    Icon { width: 24, height: 24, fill: "#6e7781", icon: BsArrowDownShort }
+                                                } else {
+                                                    Icon { width: 24, height: 24, fill: "#6e7781", icon: BsArrowUpShort }
                                                 }
                                             }
                                         }
@@ -258,7 +230,9 @@ fn Content() -> Element {
                     }
                 }
 
-                div { class: "column pb-1", p { class: "has-text-grey-light", "用户prompt" } }
+                div { class: "column pb-1",
+                    p { class: "has-text-grey-light", "用户prompt" }
+                }
             }
 
             div { class: "columns",
@@ -290,8 +264,9 @@ fn Content() -> Element {
                                     onclick: move |_| {
                                         system_prompts
                                             .with_mut(|e| {
-                                                if let Some(v)
-                                                    = e.iter_mut().find(|p| p.name.eq(&*system_prompt_name.current()))
+                                                if let Some(v) = e
+                                                    .iter_mut()
+                                                    .find(|p| p.name.eq(&*system_prompt_name.current()))
                                                 {
                                                     v.content = system_prompt.current().clone().to_string();
                                                 } else {
@@ -358,30 +333,27 @@ fn Content() -> Element {
             }
 
             if request_button_disable(configuration, system_prompt, prompt) {
-                rsx! {
-                    div { class: "notification is-warning",
-                        "请检查url前缀, openAI密钥是否为空, system prompt和用户prompt必须有一个不为空"
-                    }
+                div { class: "notification is-warning",
+                    "请检查url前缀, openAI密钥是否为空, system prompt和用户prompt必须有一个不为空"
                 }
             }
 
             if !error_msg.is_empty() {
-                rsx! {
-                    div { class: "notification is-warning",
-                        button { class: "delete",
+                div { class: "notification is-warning",
+                    button {
+                        class: "delete",
                         onclick: move |_| {
                             error_msg.set("".to_string());
-                        }},
-                        "{error_msg}"
+                        }
                     }
+                    "{error_msg}"
                 }
             }
             if !response.content.is_empty() {
-                rsx! {
-                    article { class: "message mt-2",
-                        div { class: "message-body",
-                            dangerous_inner_html: "{response.content}",
-                        }
+                article { class: "message mt-2",
+                    div {
+                        class: "message-body",
+                        dangerous_inner_html: "{response.content}"
                     }
                 }
             }
@@ -414,6 +386,68 @@ fn SystemPrompt() -> Element {
                 },
                 input { name: "name" }
                 button { class: "button is-primary", "Submit" }
+            }
+        }
+    )
+}
+
+#[component]
+fn DropdownMenu() -> Element {
+    let mut system_prompt_dropdown = use_context::<Signal<SystemPrompts>>();
+    let system_prompts = use_context::<Signal<SystemPrompts>>();
+    rsx!(
+        div { class: "dropdown-menu", id: "dropdown-menu", role: "menu",
+            div { class: "dropdown-content",
+                a {
+                    class: "dropdown-item py-0",
+                    onclick: move |_| {
+                        system_prompt_dropdown.set(SystemPrompts::new());
+                    },
+                    "关闭"
+                }
+                hr { class: "dropdown-divider" }
+                if system_prompts().is_empty() {
+                    div { class: "dropdown-item",
+                        p { "没有system prompts" }
+                    }
+                }
+            }
+        }
+    )
+}
+
+#[component]
+fn DropdownItem() -> Element {
+    let system_prompts = use_context::<Signal<Vec<SystemPrompt>>>();
+    rsx!(
+        div { class: "dropdown-item",
+            div { class: "columns is-multiline",
+                for each_prompt in system_prompts() {
+                    div { class: "column",
+                        span {
+                            class: "tag is-primary is-light",
+                            onclick: move |_| {
+                                system_prompt_name.set(e.name.clone());
+                                system_prompt.set(e.content.clone());
+                                system_prompt_dropdown.set("");
+                            },
+                            "{e.name}"
+
+                            button {
+                                class: "delete is-small",
+                                onclick: move |_| {
+                                    system_prompts
+                                        .with_mut(|v| {
+                                            if let Some(p) = v.iter().position(|value| value.name.eq(&e.name)) {
+                                                v.remove(p);
+                                            }
+                                        });
+                                    save_system_prompts(&*system_prompts.current().clone());
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
     )
