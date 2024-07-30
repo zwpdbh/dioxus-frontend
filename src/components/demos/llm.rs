@@ -419,6 +419,7 @@ fn DropdownMenu() -> Element {
 #[component]
 fn DropdownItem() -> Element {
     let system_prompts = use_context::<Signal<Vec<SystemPrompt>>>();
+    let system_prompt = use_context::<Signal<SystemPrompt>>();
     rsx!(
         div { class: "dropdown-item",
             div { class: "columns is-multiline",
@@ -427,18 +428,21 @@ fn DropdownItem() -> Element {
                         span {
                             class: "tag is-primary is-light",
                             onclick: move |_| {
-                                system_prompt_name.set(e.name.clone());
-                                system_prompt.set(e.content.clone());
+                                system_prompt_name.set(each_prompt.name.clone());
+                                system_prompt.set(each_prompt.content.clone());
                                 system_prompt_dropdown.set("");
                             },
-                            "{e.name}"
+                            "{each_prompt.name}"
 
                             button {
                                 class: "delete is-small",
                                 onclick: move |_| {
                                     system_prompts
                                         .with_mut(|v| {
-                                            if let Some(p) = v.iter().position(|value| value.name.eq(&e.name)) {
+                                            if let Some(p) = v
+                                                .iter()
+                                                .position(|value| value.name.eq(&each_prompt.name))
+                                            {
                                                 v.remove(p);
                                             }
                                         });
