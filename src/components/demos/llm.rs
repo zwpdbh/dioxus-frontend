@@ -418,41 +418,51 @@ fn DropdownMenu() -> Element {
 
 #[component]
 fn DropdownItem() -> Element {
+    // Need optimize this part
     let system_prompts = use_context::<Signal<Vec<SystemPrompt>>>();
-    let system_prompt = use_context::<Signal<SystemPrompt>>();
-    rsx!(
-        div { class: "dropdown-item",
-            div { class: "columns is-multiline",
-                for each_prompt in system_prompts() {
-                    div { class: "column",
-                        span {
-                            class: "tag is-primary is-light",
-                            onclick: move |_| {
-                                system_prompt_name.set(each_prompt.name.clone());
-                                system_prompt.set(each_prompt.content.clone());
-                                system_prompt_dropdown.set("");
-                            },
-                            "{each_prompt.name}"
+    let mut system_prompt = use_context::<Signal<String>>();
+    let mut system_prompt_name = use_context::<Signal<String>>();
+    let mut system_prompt_dropdown = use_context::<Signal<String>>();
 
-                            button {
-                                class: "delete is-small",
-                                onclick: move |_| {
-                                    system_prompts
-                                        .with_mut(|v| {
-                                            if let Some(p) = v
-                                                .iter()
-                                                .position(|value| value.name.eq(&each_prompt.name))
-                                            {
-                                                v.remove(p);
-                                            }
-                                        });
-                                    save_system_prompts(&*system_prompts.current().clone());
-                                }
-                            }
+    let prompt_rendered = system_prompts().into_iter().map(|each_prompt| {
+        let each_prompt_clone = each_prompt.clone();
+        let system_prompts_read = system_prompts();
+
+        rsx! {
+            div { class: "column",
+                span {
+                    class: "tag is-primary is-light",
+                    onclick: move |_| {
+                        system_prompt_name.set(each_prompt_clone.name.clone());
+                        system_prompt.set(each_prompt_clone.content.clone());
+                        system_prompt_dropdown.set("".to_string());
+                    },
+                    "{each_prompt.name}"
+
+                    button {
+                        class: "delete is-small",
+                        onclick: move |_| {
+                            let system_prompts_read_filtered = system_prompts_read
+                                .iter()
+                                .filter(|each| each.name != each_prompt.name)
+                                .collect::<Vec<&SystemPrompt>>();
+                            save_system_prompts(system_prompts_read_filtered)
                         }
                     }
                 }
             }
         }
+    });
+
+    rsx!(
+        div { class: "dropdown-item",
+            div { class: "columns is-multiline", {prompt_rendered} }
+        }
     )
+}
+
+#[allow(unused)]
+fn save_system_prompts(prompts: Vec<&SystemPrompt>) {
+    todo!()
+    // write_data(SYSTEM_PROMPTS_FILE_NAME, prompts);
 }
