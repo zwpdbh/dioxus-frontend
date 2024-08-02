@@ -92,9 +92,9 @@ struct MessageBody {
 
 #[derive(Serialize, Deserialize, Debug, PartialEq, Props, Clone)]
 struct ChatResponse {
-    pub content: String,
-    pub prompt_tokens: u64,
-    pub completion_tokens: u64,
+    content: String,
+    prompt_tokens: u64,
+    completion_tokens: u64,
 }
 
 #[derive(Serialize, Deserialize, Debug, PartialEq, Props, Clone)]
@@ -134,8 +134,167 @@ fn Content() -> Element {
         div { class: "container is-max-desktop px-2",
             RenderNav {}
             RenderSetting {}
+            RenderPrompt {}
+            RenderSavePrompt {}
+            RenderSubmit {}
         }
     }
+}
+
+fn request_button_disable(config: &Configuration, system_prompt: &str, user_prompt: &str) -> bool {
+    config.secret.is_empty()
+        || config.url_prefix.is_empty()
+        || (system_prompt.is_empty() && user_prompt.is_empty())
+}
+
+#[component]
+fn RenderSubmit() -> Element {
+    let mut error_msg = use_context::<Signal<String>>();
+    let mut loading = use_context::<Signal<String>>();
+    let mut response = use_context::<Signal<ChatResponse>>();
+    let configuration = use_context::<Signal<Configuration>>();
+    let system_prompt = use_context::<Signal<String>>();
+    let prompt = use_context::<Signal<String>>();
+
+    let submit = move |_| {
+        spawn(async move {
+            loading.set("is-loading".to_string());
+            let configuration = configuration.clone();
+            let system_prompt = system_prompt.clone();
+            let prompt = prompt.clone();
+
+            let result = request(
+                configuration().url_prefix.clone(),
+                configuration().secret.clone(),
+                system_prompt().to_string(),
+                prompt().to_string(),
+            )
+            .await;
+
+            match result {
+                Ok(res) => {
+                    error_msg.set("".to_string());
+                    response.set(res);
+                }
+                Err(e) => error_msg.set(e.to_string()),
+            }
+            loading.set("".to_string());
+        });
+    };
+
+    rsx!(
+        button {
+            class: "button is-primary my-1 {loading()}",
+            disabled: "{request_button_disable(&configuration(), &system_prompt(), &prompt())}",
+            onclick: submit
+        }
+
+        if request_button_disable(&configuration(), &system_prompt(), &prompt()) {
+            div { class: "notification is-warning",
+                "please check url, openAI secret, system prompt and user prompt"
+            }
+        }
+
+        if !error_msg().is_empty() {
+            div { class: "notification is-warning",
+                button {
+                    class: "delete",
+                    onclick: move |_| {
+                        error_msg.set("".to_string());
+                    }
+                }
+                "{error_msg}"
+            }
+        }
+        if !response().content.is_empty() {
+            article { class: "message mt-2",
+                div {
+                    class: "message-body",
+                    dangerous_inner_html: "{response().content}"
+                }
+            }
+        }
+    )
+}
+
+fn save_button_attr(system_prompt: String) -> String {
+    if system_prompt.trim().is_empty() {
+        "is-hidden".to_string()
+    } else {
+        "".to_string()
+    }
+}
+
+#[component]
+fn RenderSavePrompt() -> Element {
+    let mut system_prompt = use_context::<Signal<String>>();
+    let mut system_prompt_name = use_context::<Signal<String>>();
+    let mut prompt = use_context::<Signal<String>>();
+    let mut system_prompts = use_context::<Signal<Vec<SystemPrompt>>>();
+    let loading = use_context::<Signal<String>>();
+    let save_button_hidden = save_button_attr(system_prompt());
+
+    rsx!(
+        div { class: "columns",
+            div { class: "column pt-1",
+                p { class: "control",
+                    textarea {
+                        class: "textarea",
+                        value: "{system_prompt()}",
+                        oninput: move |evt| {
+                            system_prompt.set(evt.value().clone());
+                        }
+                    }
+                }
+                div { class: "level {save_button_hidden} mt-1",
+                    div { class: "level-left",
+                        div { class: "level-item",
+                            input {
+                                class: "input",
+                                placeholder: "prompt(overwrite existing)",
+                                r#type: "text",
+                                value: "{system_prompt_name()}",
+                                oninput: move |evt| { system_prompt_name.set(evt.value().clone()) }
+                            }
+                        }
+                        div { class: "level-item",
+                            button {
+                                class: "button is-primary",
+                                disabled: "{system_prompt_name().is_empty()}",
+                                onclick: move |_| {
+                                    system_prompts
+                                        .with_mut(|e| {
+                                            if let Some(v) = e.iter_mut().find(|p| p.name.eq(&system_prompt_name()))
+                                            {
+                                                v.content = system_prompt().clone().to_string();
+                                            } else {
+                                                e.push(SystemPrompt {
+                                                    name: system_prompt_name().clone().to_string(),
+                                                    content: system_prompt().clone().to_string(),
+                                                });
+                                            }
+                                        });
+                                    save_system_prompts_v2(system_prompts());
+                                },
+                                "save prompt"
+                            }
+                        }
+                    }
+                }
+            }
+            div { class: "column pt-1",
+                p { class: "control {loading()}",
+                    textarea {
+                        class: "textarea",
+                        value: "{prompt()}",
+                        oninput: move |evt| {
+                            prompt.set(evt.value().clone());
+                        }
+                    }
+                }
+            }
+        }
+    )
 }
 
 #[component]
@@ -444,4 +603,81 @@ fn DropdownItem() -> Element {
 fn save_system_prompts(prompts: Vec<&SystemPrompt>) {
     todo!()
     // write_data(SYSTEM_PROMPTS_FILE_NAME, prompts);
+}
+
+#[allow(unused)]
+fn save_system_prompts_v2(prompts: Vec<SystemPrompt>) {
+    todo!()
+    // write_data(SYSTEM_PROMPTS_FILE_NAME, prompts);
+}
+
+#[allow(unused)]
+async fn request(
+    url_prefix: String,
+    secret: String,
+    system_prompt: String,
+    prompt: String,
+) -> Result<ChatResponse, Box<dyn std::error::Error>> {
+    let mut messages = Vec::new();
+    if !system_prompt.trim().is_empty() {
+        messages.push(MessageBody {
+            role: String::from("ROLE_SYSTEM"),
+            content: system_prompt.clone(),
+        })
+    }
+    messages.push(MessageBody {
+        role: String::from("ROLE_USER"),
+        content: prompt.clone(),
+    });
+
+    let client = reqwest::Client::new();
+    let body = json!({
+        "messages":  messages,
+        "model": "gpt-3.5-turbo",
+    });
+
+    println!("body:{}", body);
+
+    let mut authorization = "Bearer ".to_string();
+    authorization.push_str(&secret);
+
+    let res = client
+        .post(format!("{url_prefix}/v1/chat/completions"))
+        .body(body.to_string())
+        .header("Content-Type", "application/json")
+        .header("Authorization", authorization)
+        .send()
+        .await?
+        .text()
+        .await?;
+    println!("result:{}", res);
+    let v: Value = serde_json::from_str(&res)?;
+    let error = v["error"]["message"].as_str();
+    if let Some(e) = error {
+        return Err(e.to_string().into());
+    }
+    let content = v["choices"][0]["message"]["content"]
+        .as_str()
+        .unwrap_or_else(|| "")
+        .to_string();
+    let prompt_tokens = v["usage"]["prompt_tokens"].as_u64().unwrap_or_else(|| 0);
+    let completion_tokens = v["usage"]["completion_tokens"]
+        .as_u64()
+        .unwrap_or_else(|| 0);
+
+    // let mut path = PathBuf::new();
+    // let mut file_name = current_date_time();
+    // file_name.push_str(".txt");
+    // path.push(OUTPUT_DIR);
+    // path.push(file_name);
+    // write_plain_data(path.as_path(),&format!(
+    //     "system prompt:{}\nuser prompt:{}\n\nanswer:{}\nprompt_tokens:{} completion_tokens:{}\n\nfull body:{}",
+    //     system_prompt, prompt, content, prompt_tokens, completion_tokens, res
+    // ));
+    // Ok(ChatResponse {
+    //     content: markdown::to_html(&content),
+    //     prompt_tokens,
+    //     completion_tokens,
+    // })
+    todo!("implement request")
 }
