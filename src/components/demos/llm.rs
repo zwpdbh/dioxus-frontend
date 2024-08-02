@@ -122,7 +122,8 @@ fn RenderSubmit() -> Element {
         button {
             class: "button is-primary my-1 {loading()}",
             disabled: "{request_button_disable(&configuration(), &system_prompt(), &prompt())}",
-            onclick: submit
+            onclick: submit,
+            "submit"
         }
 
         if request_button_disable(&configuration(), &system_prompt(), &prompt()) {
