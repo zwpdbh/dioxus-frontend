@@ -8,6 +8,13 @@ dx serve --hot-reload
 
 - Open the browser to http://localhost:8080
 
+## Prerequisites
+
+```sh
+cargo install dioxus-cli
+sudo apt install libssl-dev pkg-config
+```
+
 ## How to config project's git configure
 
 - Show current git config used by project
@@ -20,8 +27,8 @@ dx serve --hot-reload
 
   ```toml
   [user]
-    name = your_name
-    email = your_email
+    name = zw
+    email = hyperion_z@outlook.com
   ```
 
 ## Run
@@ -32,5 +39,4 @@ dx serve --port 3002
 
 ## References
 
-- [dioxus-openai-qa-gui](https://github.com/fairjm/dioxus-openai-qa-gui)
-  
+- [dioxus-openai-qa-gui](https://github.com/fairjm/dioxus-openai-qa-gui)  
