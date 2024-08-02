@@ -1,12 +1,18 @@
 #![allow(non_snake_case)]
+#[allow(unused)]
 use super::MyCard;
 use crate::Route;
 use dioxus::prelude::*;
 use dioxus_logger::tracing::info;
 // use futures_util::io::Sink;
+use dioxus_free_icons::icons::fa_brands_icons::FaGithub;
+use dioxus_free_icons::Icon;
+#[allow(unused)]
 use serde::de::DeserializeOwned;
 use serde::{Deserialize, Serialize};
+#[allow(unused)]
 use serde_json::json;
+#[allow(unused)]
 use serde_json::Value;
 
 #[component]
@@ -44,6 +50,7 @@ struct Configuration {
     url_prefix: String,
     secret: String,
 }
+#[allow(unused)]
 impl Configuration {
     fn new() -> Self {
         Configuration {
@@ -64,6 +71,7 @@ struct SystemPrompts {
     pub prompt_list: Vec<SystemPrompt>,
 }
 
+#[allow(unused)]
 impl SystemPrompts {
     fn new() -> Self {
         SystemPrompts {
@@ -93,6 +101,7 @@ struct SystemPromptDropdown {
     pub dropdown_list: Vec<String>,
 }
 
+#[allow(unused)]
 impl SystemPromptDropdown {
     fn new() -> Self {
         SystemPromptDropdown {
@@ -103,22 +112,22 @@ impl SystemPromptDropdown {
 
 #[component]
 fn Content() -> Element {
-    let configuration = use_context_provider(|| Signal::new(Configuration::new()));
-    let system_prompt: Signal<Vec<SystemPrompt>> = use_context_provider(|| Signal::new(vec![]));
-    let setting_hide = use_context_provider(|| Signal::new("is-hidden"));
+    // let configuration = use_context_provider(|| Signal::new(Configuration::new()));
+    // let system_prompt: Signal<Vec<SystemPrompt>> = use_context_provider(|| Signal::new(vec![]));
+    // let setting_hide = use_context_provider(|| Signal::new("is-hidden"));
 
-    let system_prompt_name = use_context_provider(|| Signal::new(""));
-    let prompt = use_context_provider(|| Signal::new(""));
-    let loading = use_context_provider(|| Signal::new(""));
-    let error_msg = use_context_provider(|| Signal::new(""));
-    let response = use_context_provider(|| {
-        Signal::new(ChatResponse {
-            content: String::from(""),
-            prompt_tokens: 0,
-            completion_tokens: 0,
-        })
-    });
-    let system_prompt_dropdown = use_context_provider(|| Signal::new(SystemPromptDropdown::new()));
+    // let system_prompt_name = use_context_provider(|| Signal::new(""));
+    // let prompt = use_context_provider(|| Signal::new(""));
+    // let loading = use_context_provider(|| Signal::new(""));
+    // let error_msg = use_context_provider(|| Signal::new(""));
+    // let response = use_context_provider(|| {
+    //     Signal::new(ChatResponse {
+    //         content: String::from(""),
+    //         prompt_tokens: 0,
+    //         completion_tokens: 0,
+    //     })
+    // });
+    // let system_prompt_dropdown = use_context_provider(|| Signal::new(SystemPromptDropdown::new()));
 
     rsx! {
         // head {
@@ -139,221 +148,6 @@ fn Content() -> Element {
                             }
                             span { "GitHub" }
                         }
-                    }
-                }
-            }
-
-            button {
-
-                class: "button is-white is-small",
-                onclick: move |_| {
-                    if setting_hide.is_empty() {
-                        setting_hide.set("is-hidden");
-                    } else {
-                        setting_hide.set("");
-                    }
-                },
-                span { class: "icon has-text-light",
-                    Icon { width: 24, height: 24, fill: "#6e7781", icon: BsGear }
-                }
-                span { "设置" }
-            }
-
-            div { class: "columns {setting_hide}",
-                div { class: "column is-6",
-                    input {
-                        class: "input",
-                        r#type: "text",
-                        value: "{configuration.url_prefix}",
-                        oninput: move |evt| {
-                            let conf = Configuration {
-                                url_prefix: evt.value.clone(),
-                                secret: configuration.current().secret.clone(),
-                            };
-                            save_configuration(&conf);
-                            configuration.set(conf);
-                        }
-                    }
-                }
-                div { class: "column is-6",
-                    input {
-                        class: "input",
-                        placeholder: "OpenAi Secret",
-                        r#type: "password",
-                        value: "{configuration.secret}",
-                        oninput: move |evt| {
-                            let conf = Configuration {
-                                url_prefix: configuration.current().url_prefix.clone(),
-                                secret: evt.value.clone(),
-                            };
-                            save_configuration(&conf);
-                            configuration.set(conf);
-                        }
-                    }
-                }
-            }
-
-            div { class: "columns",
-                div { class: "column pb-1",
-                    nav { class: "level mb-1",
-                        div { class: "level-left",
-                            div { class: "level-item",
-                                p { class: "has-text-grey-light", "系统prompt" }
-                            }
-                            div { class: "level-item",
-                                div { class: "dropdown {system_prompt_dropdown}",
-                                    div { class: "dropdown-trigger",
-                                        button {
-                                            class: "button is-small",
-                                            "aria-haspopup": true,
-                                            "aria-controls": "dropdown-menu",
-                                            onclick: move |_| {
-                                                if system_prompt_dropdown.current().is_empty() {
-                                                    system_prompt_dropdown.set("is-active");
-                                                } else {
-                                                    system_prompt_dropdown.set("");
-                                                }
-                                            },
-                                            span { "prompt列表" }
-                                            span { class: "icon is-small",
-                                                if system_prompt_dropdown.is_empty() {
-                                                    Icon { width: 24, height: 24, fill: "#6e7781", icon: BsArrowDownShort }
-                                                } else {
-                                                    Icon { width: 24, height: 24, fill: "#6e7781", icon: BsArrowUpShort }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-
-                div { class: "column pb-1",
-                    p { class: "has-text-grey-light", "用户prompt" }
-                }
-            }
-
-            div { class: "columns",
-                div { class: "column pt-1",
-                    p { class: "control",
-                        textarea {
-                            class: "textarea",
-                            value: "{system_prompt}",
-                            oninput: move |evt| {
-                                system_prompt.set(evt.value.clone());
-                            }
-                        }
-                    }
-                    div { class: "level {save_button_attr(system_prompt)} mt-1",
-                        div { class: "level-left",
-                            div { class: "level-item",
-                                input {
-                                    class: "input",
-                                    placeholder: "prompt名(重名将会覆盖已有的内容)",
-                                    r#type: "text",
-                                    value: "{system_prompt_name}",
-                                    oninput: move |evt| { system_prompt_name.set(evt.value.clone()) }
-                                }
-                            }
-                            div { class: "level-item",
-                                button {
-                                    class: "button is-primary",
-                                    disabled: "{system_prompt_name.is_empty()}",
-                                    onclick: move |_| {
-                                        system_prompts
-                                            .with_mut(|e| {
-                                                if let Some(v) = e
-                                                    .iter_mut()
-                                                    .find(|p| p.name.eq(&*system_prompt_name.current()))
-                                                {
-                                                    v.content = system_prompt.current().clone().to_string();
-                                                } else {
-                                                    e.push(SystemPrompt {
-                                                        name: system_prompt_name.current().clone().to_string(),
-                                                        content: system_prompt.current().clone().to_string(),
-                                                    });
-                                                }
-                                            });
-                                        save_system_prompts(&*system_prompts.current().clone());
-                                    },
-                                    "保存prompt"
-                                }
-                            }
-                        }
-                    }
-                }
-                div { class: "column pt-1",
-                    p { class: "control {loading}",
-                        textarea {
-                            class: "textarea",
-                            value: "{prompt}",
-                            oninput: move |evt| {
-                                prompt.set(evt.value.clone());
-                            }
-                        }
-                    }
-                }
-            }
-
-            button {
-
-                class: "button is-primary my-1 {loading}",
-                disabled: "{request_button_disable(configuration, system_prompt, prompt)}",
-                onclick: move |_| {
-                    cx.spawn({
-                        let loading = loading.clone();
-                        loading.set("is-loading".to_string());
-                        let configuration = configuration.clone();
-                        let system_prompt = system_prompt.clone();
-                        let prompt = prompt.clone();
-                        let response = response.clone();
-                        let error_msg = error_msg.clone();
-                        async move {
-                            let result = request(
-                                    configuration.current().url_prefix.clone(),
-                                    configuration.current().secret.clone(),
-                                    system_prompt.current().to_string(),
-                                    prompt.current().to_string(),
-                                )
-                                .await;
-                            match result {
-                                Ok(res) => {
-                                    error_msg.set("".to_string());
-                                    response.set(res);
-                                }
-                                Err(e) => error_msg.set(e.to_string()),
-                            }
-                            loading.set("".to_string());
-                        }
-                    })
-                },
-                "提交"
-            }
-
-            if request_button_disable(configuration, system_prompt, prompt) {
-                div { class: "notification is-warning",
-                    "请检查url前缀, openAI密钥是否为空, system prompt和用户prompt必须有一个不为空"
-                }
-            }
-
-            if !error_msg.is_empty() {
-                div { class: "notification is-warning",
-                    button {
-                        class: "delete",
-                        onclick: move |_| {
-                            error_msg.set("".to_string());
-                        }
-                    }
-                    "{error_msg}"
-                }
-            }
-            if !response.content.is_empty() {
-                article { class: "message mt-2",
-                    div {
-                        class: "message-body",
-                        dangerous_inner_html: "{response.content}"
                     }
                 }
             }
