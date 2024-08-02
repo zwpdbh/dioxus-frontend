@@ -40,103 +40,39 @@ pub fn DemoLLM() -> Element {
                     "fairjm/dioxus-openai-qa-gui"
                 }
             }
-
-            Content {}
+            RenderLLMForm {}
         }
     )
 }
 
-#[derive(Serialize, Deserialize, Debug, PartialEq, Props, Clone)]
-struct Configuration {
-    url_prefix: String,
-    secret: String,
-}
-#[allow(unused)]
-impl Configuration {
-    fn new() -> Self {
-        Configuration {
-            url_prefix: "".to_string(),
-            secret: "".to_string(),
-        }
-    }
-}
-
-#[derive(Serialize, Deserialize, Debug, PartialEq, Props, Clone)]
-struct SystemPrompt {
-    pub name: String,
-    pub content: String,
-}
-
-#[derive(Serialize, Deserialize, Debug, PartialEq, Props, Clone)]
-struct SystemPrompts {
-    pub prompt_list: Vec<SystemPrompt>,
-}
-
-#[allow(unused)]
-impl SystemPrompts {
-    fn new() -> Self {
-        SystemPrompts {
-            prompt_list: vec![],
-        }
-    }
-    fn is_empty(self) -> bool {
-        self.prompt_list.is_empty()
-    }
-}
-
-#[derive(Serialize, Deserialize, Debug, PartialEq, Props, Clone)]
-struct MessageBody {
-    pub role: String,
-    pub content: String,
-}
-
-#[derive(Serialize, Deserialize, Debug, PartialEq, Props, Clone)]
-struct ChatResponse {
-    content: String,
-    prompt_tokens: u64,
-    completion_tokens: u64,
-}
-
-#[derive(Serialize, Deserialize, Debug, PartialEq, Props, Clone)]
-struct SystemPromptDropdown {
-    pub dropdown_list: Vec<String>,
-}
-
-#[allow(unused)]
-impl SystemPromptDropdown {
-    fn new() -> Self {
-        SystemPromptDropdown {
-            dropdown_list: vec![],
-        }
-    }
-}
-
 #[component]
-fn Content() -> Element {
-    // let configuration = use_context_provider(|| Signal::new(Configuration::new()));
-    // let system_prompt: Signal<Vec<SystemPrompt>> = use_context_provider(|| Signal::new(vec![]));
-    // let setting_hide = use_context_provider(|| Signal::new("is-hidden"));
-
-    // let system_prompt_name = use_context_provider(|| Signal::new(""));
-    // let prompt = use_context_provider(|| Signal::new(""));
-    // let loading = use_context_provider(|| Signal::new(""));
-    // let error_msg = use_context_provider(|| Signal::new(""));
-    // let response = use_context_provider(|| {
-    //     Signal::new(ChatResponse {
-    //         content: String::from(""),
-    //         prompt_tokens: 0,
-    //         completion_tokens: 0,
-    //     })
-    // });
-    // let system_prompt_dropdown = use_context_provider(|| Signal::new(SystemPromptDropdown::new()));
+fn RenderLLMForm() -> Element {
+    let _configuration = use_context_provider(|| Signal::new(Configuration::new()));
+    let _system_prompts: Signal<Vec<SystemPrompt>> = use_context_provider(|| Signal::new(vec![]));
+    let _system_prompt: Signal<String> = use_context_provider(|| Signal::new("".to_string()));
+    let _system_prompt_dropdown: Signal<&str> = use_context_provider(|| Signal::new(""));
+    let _setting_hide = use_context_provider(|| Signal::new("is-hidden"));
+    let _prompt = use_context_provider(|| Signal::new(""));
+    let _loading = use_context_provider(|| Signal::new(""));
+    let _error_msg = use_context_provider(|| Signal::new(""));
+    let _response = use_context_provider(|| {
+        Signal::new(ChatResponse {
+            content: String::from(""),
+            prompt_tokens: 0,
+            completion_tokens: 0,
+        })
+    });
 
     rsx! {
-        div { class: "container is-max-desktop px-2",
-            RenderNav {}
-            RenderSetting {}
-            RenderPrompt {}
-            RenderSavePrompt {}
-            RenderSubmit {}
+        MyCard {
+
+            div { class: "container is-max-desktop px-2",
+                RenderNav {}
+                RenderSetting {}
+                RenderPrompt {}
+                RenderSavePrompt {}
+                RenderSubmit {}
+            }
         }
     }
 }
@@ -680,4 +616,69 @@ async fn request(
     //     completion_tokens,
     // })
     todo!("implement request")
+}
+
+#[derive(Serialize, Deserialize, Debug, PartialEq, Props, Clone)]
+struct Configuration {
+    url_prefix: String,
+    secret: String,
+}
+#[allow(unused)]
+impl Configuration {
+    fn new() -> Self {
+        Configuration {
+            url_prefix: "".to_string(),
+            secret: "".to_string(),
+        }
+    }
+}
+
+#[derive(Serialize, Deserialize, Debug, PartialEq, Props, Clone)]
+struct SystemPrompt {
+    pub name: String,
+    pub content: String,
+}
+
+#[derive(Serialize, Deserialize, Debug, PartialEq, Props, Clone)]
+struct SystemPrompts {
+    pub prompt_list: Vec<SystemPrompt>,
+}
+
+#[allow(unused)]
+impl SystemPrompts {
+    fn new() -> Self {
+        SystemPrompts {
+            prompt_list: vec![],
+        }
+    }
+    fn is_empty(self) -> bool {
+        self.prompt_list.is_empty()
+    }
+}
+
+#[derive(Serialize, Deserialize, Debug, PartialEq, Props, Clone)]
+struct MessageBody {
+    pub role: String,
+    pub content: String,
+}
+
+#[derive(Serialize, Deserialize, Debug, PartialEq, Props, Clone)]
+struct ChatResponse {
+    content: String,
+    prompt_tokens: u64,
+    completion_tokens: u64,
+}
+
+#[derive(Serialize, Deserialize, Debug, PartialEq, Props, Clone)]
+struct SystemPromptDropdown {
+    pub dropdown_list: Vec<String>,
+}
+
+#[allow(unused)]
+impl SystemPromptDropdown {
+    fn new() -> Self {
+        SystemPromptDropdown {
+            dropdown_list: vec![],
+        }
+    }
 }
