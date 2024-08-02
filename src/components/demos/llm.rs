@@ -131,17 +131,129 @@ fn Content() -> Element {
     // let system_prompt_dropdown = use_context_provider(|| Signal::new(SystemPromptDropdown::new()));
 
     rsx! {
-        // head {
-        //     meta { name: "viewport", content: "width=device-width, initial-scale=1" } }
         div { class: "container is-max-desktop px-2",
-            Nav {}
-            Setting {}
+            RenderNav {}
+            RenderSetting {}
         }
     }
 }
 
 #[component]
-fn Setting() -> Element {
+fn RenderPrompt() -> Element {
+    use dioxus_free_icons::icons::bs_icons::BsArrowDownShort;
+    use dioxus_free_icons::icons::bs_icons::BsArrowUpShort;
+
+    let system_prompts = use_context::<Signal<Vec<SystemPrompt>>>();
+    let mut system_prompt_name = use_context::<Signal<String>>();
+    let mut system_prompt = use_context::<Signal<String>>();
+    let mut system_prompt_dropdown = use_context::<Signal<&str>>();
+
+    let system_prompts_elements = system_prompts().into_iter().map(|e| {
+        let e_clone = e.clone();
+
+        rsx!(
+            div { class: "column",
+                span {
+                    class: "tag is-primary is-light",
+                    onclick: move |_| {
+                        system_prompt_name.set(e.clone().name.clone());
+                        system_prompt.set(e.clone().content.clone());
+                        system_prompt_dropdown.set("");
+                    },
+                    "{e.name}"
+
+                    button {
+                        class: "delete is-small",
+                        onclick: move |_| {
+                            let system_prompts_binding = system_prompts();
+                            let filtered_system_prompts = system_prompts_binding
+                                .iter()
+                                .filter(|v| { v.name != e_clone.name })
+                                .collect();
+                            save_system_prompts(filtered_system_prompts);
+                        }
+                    }
+                }
+            }
+        )
+    });
+
+    rsx!(
+        div { class: "columns",
+            div { class: "column pb-1",
+                nav { class: "level mb-1",
+                    div { class: "level-left",
+                        div { class: "level-item",
+                            p { class: "has-text-grey-light", "系统prompt" }
+                        }
+                        div { class: "level-item",
+                            div { class: "dropdown {system_prompt_dropdown}",
+                                div { class: "dropdown-trigger",
+                                    button {
+                                        class: "button is-small",
+                                        "aria-haspopup": true,
+                                        "aria-controls": "dropdown-menu",
+                                        onclick: move |_| {
+                                            if system_prompt_dropdown().is_empty() {
+                                                system_prompt_dropdown.set("is-active");
+                                            } else {
+                                                system_prompt_dropdown.set("");
+                                            }
+                                        },
+                                        span { "prompt列表" }
+                                        span { class: "icon is-small",
+                                            if system_prompt_dropdown().is_empty() {
+                                                Icon { width: 24, height: 24, fill: "#6e7781", icon: BsArrowDownShort }
+                                            } else {
+                                                Icon { width: 24, height: 24, fill: "#6e7781", icon: BsArrowUpShort }
+                                            }
+                                        }
+                                    }
+                                }
+
+                                div {
+
+                                    class: "dropdown-menu",
+
+                                    id: "dropdown-menu",
+
+                                    role: "menu",
+                                    div { class: "dropdown-content",
+                                        a {
+                                            class: "dropdown-item py-0",
+                                            onclick: move |_| {
+                                                system_prompt_dropdown.set("");
+                                            },
+                                            "关闭"
+                                        }
+                                        hr { class: "dropdown-divider" }
+                                        if system_prompts.is_empty() {
+                                            div { class: "dropdown-item",
+                                                p { "没有system prompts" }
+                                            }
+                                        }
+                                        div { class: "dropdown-item",
+                                            div { class: "columns is-multiline",
+                                                {system_prompts_elements}
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            div { class: "column pb-1",
+                p { class: "has-text-grey-light", "用户prompt" }
+            }
+        }
+    )
+}
+
+#[component]
+fn RenderSetting() -> Element {
     use dioxus_free_icons::icons::bs_icons::BsGear;
 
     let mut setting_hide = use_context::<Signal<&str>>();
@@ -205,7 +317,7 @@ fn save_configuration(config: &Configuration) {
 }
 
 #[component]
-fn Nav() -> Element {
+fn RenderNav() -> Element {
     rsx!(
         nav { class: "level mt-2 mb-2",
             div { class: "level-left",
