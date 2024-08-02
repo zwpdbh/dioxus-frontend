@@ -5,6 +5,7 @@ use crate::Route;
 use dioxus::prelude::*;
 use dioxus_logger::tracing::info;
 // use futures_util::io::Sink;
+
 use dioxus_free_icons::icons::fa_brands_icons::FaGithub;
 use dioxus_free_icons::Icon;
 #[allow(unused)]
@@ -133,26 +134,98 @@ fn Content() -> Element {
         // head {
         //     meta { name: "viewport", content: "width=device-width, initial-scale=1" } }
         div { class: "container is-max-desktop px-2",
-            nav { class: "level mt-2 mb-2",
-                div { class: "level-left",
-                    div { class: "level-item",
-                        p { class: "title is-size-4 has-text-centered", "OpenAI测试" }
+            Nav {}
+            Setting {}
+        }
+    }
+}
+
+#[component]
+fn Setting() -> Element {
+    use dioxus_free_icons::icons::bs_icons::BsGear;
+
+    let mut setting_hide = use_context::<Signal<&str>>();
+    let mut configuration = use_context::<Signal<Configuration>>();
+
+    rsx!(
+        button {
+            class: "button is-white is-small",
+            onclick: move |_| {
+                if setting_hide().is_empty() {
+                    setting_hide.set("is-hidden");
+                } else {
+                    setting_hide.set("");
+                }
+            },
+            span { class: "icon has-text-light",
+                Icon { width: 24, height: 24, fill: "#6e7781", icon: BsGear }
+            }
+            span { "setting" }
+        }
+
+        div { class: "columns {setting_hide}",
+            div { class: "column is-6",
+                input {
+                    class: "input",
+                    r#type: "text",
+                    value: "{configuration().url_prefix}",
+                    oninput: move |evt| {
+                        let conf = Configuration {
+                            url_prefix: evt.value().clone(),
+                            secret: configuration().secret.clone(),
+                        };
+                        save_configuration(&conf);
+                        configuration.set(conf);
                     }
-                    div { class: "level-item",
-                        a {
-                            class: "button is-small",
-                            target: "_blank",
-                            href: "https://github.com/fairjm/dioxus-openai-qa-gui",
-                            span { class: "icon is-small",
-                                Icon { width: 24, height: 24, fill: "#6e7781", icon: FaGithub }
-                            }
-                            span { "GitHub" }
-                        }
+                }
+            }
+            div { class: "column is-6",
+                input {
+                    class: "input",
+                    placeholder: "OpenAi Secret",
+                    r#type: "password",
+                    value: "{configuration().secret}",
+                    oninput: move |evt| {
+                        let conf = Configuration {
+                            url_prefix: configuration().url_prefix.clone(),
+                            secret: evt.value().clone(),
+                        };
+                        save_configuration(&conf);
+                        configuration.set(conf);
                     }
                 }
             }
         }
-    }
+    )
+}
+
+#[allow(unused)]
+fn save_configuration(config: &Configuration) {
+    todo!("implement save_configuration")
+}
+
+#[component]
+fn Nav() -> Element {
+    rsx!(
+        nav { class: "level mt-2 mb-2",
+            div { class: "level-left",
+                div { class: "level-item",
+                    p { class: "title is-size-4 has-text-centered", "OpenAI测试" }
+                }
+                div { class: "level-item",
+                    a {
+                        class: "button is-small",
+                        target: "_blank",
+                        href: "https://github.com/fairjm/dioxus-openai-qa-gui",
+                        span { class: "icon is-small",
+                            Icon { width: 24, height: 24, fill: "#6e7781", icon: FaGithub }
+                        }
+                        span { "GitHub" }
+                    }
+                }
+            }
+        }
+    )
 }
 
 #[component]
