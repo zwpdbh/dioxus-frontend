@@ -18,8 +18,7 @@ pub fn DemoResource() -> Element {
 
 pub async fn get_pic() -> Result<ApiResponse, Error> {
     reqwest::get("https://dog.ceo/api/breeds/image/random")
-        .await
-        .unwrap()
+        .await?
         .json::<ApiResponse>()
         .await
 }
