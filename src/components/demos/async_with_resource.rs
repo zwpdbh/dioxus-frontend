@@ -1,6 +1,7 @@
 #![allow(non_snake_case)]
 use super::MyCard;
 use dioxus::prelude::*;
+use dioxus_logger::tracing::error;
 use reqwest;
 use reqwest::Error;
 use serde::Deserialize;
@@ -17,8 +18,13 @@ pub fn DemoResource() -> Element {
 }
 
 pub async fn get_pic() -> Result<ApiResponse, Error> {
-    reqwest::get("https://dog.ceo/api/breeds/image/random")
-        .await?
+    let url = "https://dog.ceo/api/breeds/image/random";
+    reqwest::get(url)
+        .await
+        .map_err(|e| {
+            error!("Failed to get image from {url}: {e}");
+            e
+        })?
         .json::<ApiResponse>()
         .await
 }
